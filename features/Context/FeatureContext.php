@@ -35,6 +35,21 @@ class FeatureContext extends MinkContext implements KernelAwareInterface
      */
     protected $excludedTablesFile = 'excluded_tables.yml';
 
+    /** @var ScriptsManager */
+    protected $scriptsManager;
+
+    /**
+     * @return ScriptsManager
+     */
+    public function getScriptsManager()
+    {
+        if (null === $this->scriptsManager) {
+            $this->scriptsManager = new ScriptsManager($this->getSession());
+        }
+
+        return $this->scriptsManager;
+    }
+
     /**
      * Register contexts
      *

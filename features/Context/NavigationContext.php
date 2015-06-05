@@ -150,7 +150,6 @@ class NavigationContext extends RawMinkContext implements PageObjectAwareInterfa
     {
         $page = isset($this->getPageMapping()[$page]) ? $this->getPageMapping()[$page] : $page;
         $this->openPage($page);
-        $this->wait();
     }
 
     /**
@@ -313,7 +312,6 @@ class NavigationContext extends RawMinkContext implements PageObjectAwareInterfa
     public function iAmOnTheImportJobPage(JobInstance $job)
     {
         $this->openPage('Import show', array('id' => $job->getId()));
-        $this->wait();
     }
 
     /**
@@ -657,7 +655,15 @@ class NavigationContext extends RawMinkContext implements PageObjectAwareInterfa
 
         $page = $this->getCurrentPage()->open($options);
         $this->loginIfRequired();
-        $this->wait();
+
+        $conditions = [
+            "!$.active",                                   // No ajax request is active
+            "$('#page').css('display') == 'block'",        // Page is displayed (no progress bar)
+            "$('.jstree-loading').length == 0",            // Jstree has finished loading
+        ];
+
+        $condition = implode(' && ', $conditions);
+        $this->wait(60000, $condition);
 
         return $page;
     }
